@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DEAL SCOUT — CyberPunk Call Script</title>
+<style>
+  @import url('[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap)');
+
+  :root {
+    --neon-cyan: #00f5ff;
+    --neon-pink: #ff006e;
+    --neon-yellow: #ffbe0b;
+    --neon-green: #39ff14;
+    --neon-purple: #bf5af2;
+    --dark-bg: #050510;
+    --panel-bg: rgba(0, 245, 255, 0.04);
+    --panel-border: rgba(0, 245, 255, 0.2);
+    --text-primary: #e0f7fa;
+    --text-dim: #7ecfd4;
+    --glow-cyan: 0 0 10px #00f5ff, 0 0 20px #00f5ff40;
+    --glow-pink: 0 0 10px #ff006e, 0 0 20px #ff006e40;
+    --glow-green: 0 0 10px #39ff14, 0 0 20px #39ff1440;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--dark-bg);
+    color: var(--text-primary);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Animated grid background ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(0,245,255,0.05) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(255,0,110,0.05) 0%, transparent 60%),
+                radial-gradient(ellipse at 60% 80%, rgba(191,90,242,0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    padding: 32px 0 24px;
+    border-bottom: 1px solid var(--panel-border);
+    margin-bottom: 28px;
+  }
+
+  .header-badge {
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--neon-pink);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    text-shadow: var(--glow-pink);
+  }
+
+  .header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(22px, 5vw, 38px);
+    font-weight: 900;
+    color: var(--neon-cyan);
+    text-shadow: var(--glow-cyan);
+    letter-spacing: 3px;
+    line-height: 1.1;
+  }
+
+  .header h1 span { color: var(--neon-pink); text-shadow: var(--glow-pink); }
+
+  .header-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 10px;
+    letter-spacing: 2px;
+  }
+
+  /* ── Progress tracker ── */
+  .progress-panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .progress-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .progress-bar-wrap {
+    flex: 1;
+    min-width: 120px;
+    height: 6px;
+    background: rgba(0,245,255,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+    box-shadow: var(--glow-cyan);
+  }
+
+  .progress-count {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--neon-cyan);
+    text-shadow: var(--glow-cyan);
+    white-space: nowrap;
+  }
+
+  /* ── Deal cards ── */
+  .deal-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .deal-card.completed {
+    border-color: rgba(57,255,20,0.4);
+    box-shadow: 0 0 12px rgba(57,255,20,0.1);
+  }
+
+  .deal-card.active {
+    border-color: var(--neon-cyan);
+    box-shadow: var(--glow-cyan);
+  }
+
+  .deal-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+
+  .deal-header:hover { background: rgba(0,245,255,0.05); }
+
+  .deal-number {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--neon-pink);
+    text-shadow: var(--glow-pink);
+    min-width: 32px;
+  }
+
+  .deal-name {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.5px;
+  }
+
+  .deal-status-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 3px 10px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    border: 1px solid;
+  }
+
+  .badge-pending {
+    color: var(--text-dim);
+    border-color: rgba(0,245,255,0.2);
+    background: rgba(0,245,255,0.05);
+  }
+
+  .badge-done {
+    color: var(--neon-green);
+    border-color: var(--neon-green);
+    background: rgba(57,255,20,0.08);
+    text-shadow: var(--glow-green);
+  }
+
+  .badge-active {
+    color: var(--neon-yellow);
+    border-color: var(--neon-yellow);
+    background: rgba(255,190,11,0.08);
+    animation: pulse-badge 1.5s infinite;
+  }
+
+  @keyframes pulse-badge {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .deal-chevron {
+    color: var(--text-dim);
+    font-size: 12px;
+    transition: transform 0.3s;
+  }
+
+  .deal-card.open .deal-chevron { transform: rotate(180deg); }
+
+  /* ── Script body ── */
+  .script-body {
+    display: none;
+    padding: 0 18px 18px;
+    border-top: 1px solid var(--panel-border);
+  }
+
+  .deal-card.open .script-body { display: block; }
+
+  /* ── Script steps ── */
+  .step {
+    margin-top: 18px;
+    border-left: 2px solid var(--panel-border);
+    padding-left: 16px;
+    transition: border-color 0.3s;
+  }
+
+  .step.step-cyan { border-left-color: var(--neon-cyan); }
+  .step.step-pink { border-left-color: var(--neon-pink); }
+  .step.step-yellow { border-left-color: var(--neon-yellow); }
+  .step.step-purple { border-left-color: var(--neon-purple); }
+  .step.step-green { border-left-color: var(--neon-green); }
+
+  .step-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .step-cyan .step-label { color: var(--neon-cyan); }
+  .step-pink .step-label { color: var(--neon-pink); }
+  .step-yellow .step-label { color: var(--neon-yellow); }
+  .step-purple .step-label { color: var(--neon-purple); }
+  .step-green .step-label { color: var(--neon-green); }
+
+  .step-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+  }
+
+  .script-line {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(0,245,255,0.12);
+    border-radius: 5px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #b2eaf0;
+    font-style: italic;
+    position: relative;
+  }
+
+  .script-line::before {
+    content: '▶';
+    color: var(--neon-cyan);
+    font-size: 9px;
+    margin-right: 8px;
+    font-style: normal;
+  }
+
+  .script-note {
+    font-size: 12px;
+    color: var(--neon-yellow);
+    margin: 6px 0 0 2px;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+
+  .script-note::before { content: '⚡ '; }
+
+  .if-block {
+    background: rgba(191,90,242,0.06);
+    border: 1px solid rgba(191,90,242,0.2);
+    border-radius: 5px;
+    padding: 10px 14px;
+    margin: 8px 0;
+  }
+
+  .if-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--neon-purple);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .if-block .script-line {
+    border-color: rgba(191,90,242,0.15);
+    background: rgba(0,0,0,0.3);
+  }
+
+  .if-block .script-line::before { color: var(--neon-purple); }
+
+  /* ── CRM Notes area ── */
+  .crm-section {
+    margin-top: 20px;
+    border-top: 1px dashed rgba(0,245,255,0.15);
+    padding-top: 18px;
+  }
+
+  .crm-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--neon-pink);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .crm-label::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--neon-pink);
+    box-shadow: var(--glow-pink);
+    animation: pulse-dot 1.5s infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%,100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.5; }
+  }
+
+  .crm-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  @media (max-width: 540px) { .crm-grid { grid-template-columns: 1fr; } }
+
+  .crm-field label {
+    display: block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .crm-field input,
+  .crm-field select {
+    width: 100%;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(0,245,255,0.2);
+    border-radius: 4px;
+    padding: 8px 12px;
+    color: var(--text-primary);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .crm-field input:focus,
+  .crm-field select:focus {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 8px rgba(0,245,255,0.2);
+  }
+
+  .crm-field select option { background: #0a0a1a; }
+
+  .crm-notes-wrap label {
+    display: block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .crm-notes-wrap textarea {
+    width: 100%;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(0,245,255,0.2);
+    border-radius: 4px;
+    padding: 10px 12px;
+    color: var(--text-primary);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    min-height: 90px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .crm-notes-wrap textarea:focus {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 8px rgba(0,245,255,0.2);
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-complete {
+    background: linear-gradient(135deg, rgba(57,255,20,0.15), rgba(57,255,20,0.05));
+    border: 1px solid var(--neon-green);
+    color: var(--neon-green);
+    text-shadow: var(--glow-green);
+  }
+
+  .btn-complete:hover {
+    background: rgba(57,255,20,0.2);
+    box-shadow: var(--glow-green);
+  }
+
+  .btn-reset {
+    background: rgba(255,0,110,0.08);
+    border: 1px solid rgba(255,0,110,0.3);
+    color: var(--neon-pink);
+  }
+
+  .btn-reset:hover {
+    background: rgba(255,0,110,0.15);
+    box-shadow: var(--glow-pink);
+  }
+
+  .btn-save {
+    background: linear-gradient(135deg, rgba(0,245,255,0.15), rgba(0,245,255,0.05));
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    text-shadow: var(--glow-cyan);
+  }
+
+  .btn-save:hover {
+    background: rgba(0,245,255,0.2);
+    box-shadow: var(--glow-cyan);
+  }
+
+  .saved-msg {
+    display: none;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--neon-green);
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 1px;
+  }
+
+  .saved-msg.show { display: flex; }
+
+  /* ── Warning box ── */
+  .warning-box {
+    background: rgba(255,190,11,0.06);
+    border: 1px solid rgba(255,190,11,0.3);
+    border-radius: 5px;
+    padding: 12px 14px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--neon-yellow);
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+  }
+
+  .warning-box strong {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    opacity: 0.8;
+  }
+
+  /* ── Summary panel ── */
+  .summary-panel {
+    background: var(--panel-bg);
+    border: 1px solid rgba(57,255,20,0.2);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 28px;
+  }
+
+  .summary-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--neon-green);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    text-shadow: var(--glow-green);
+  }
+
+  .summary-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+  }
+
+  .stat-box {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--panel-border);
+    border-radius: 5px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--neon-cyan);
+    text-shadow: var(--glow-cyan);
+    display: block;
+  }
+
+  .stat-key {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-top: 4px;
+    display: block;
+  }
+
+  .stat-box.green .stat-val { color: var(--neon-green); text-shadow: var(--glow-green); }
+  .stat-box.pink .stat-val { color: var(--neon-pink); text-shadow: var(--glow-pink); }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--dark-bg); }
+  ::-webkit-scrollbar-thumb { background: rgba(0,245,255,0.2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(0,245,255,0.4); }
+
+  /* ── Scan line overlay ── */
+  .scanlines {
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ── Mobile tweaks ── */
+  @media (max-width: 600px) {
+    .deal-name { font-size: 13px; }
+    .btn { font-size: 10px; padding: 8px 14px; }
+  }
+
+  /* ── Seller financing conditional block ── */
+  .conditional-block {
+    background: rgba(0,245,255,0.04);
+    border: 1px dashed rgba(0,245,255,0.25);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 8px 0;
+  }
+
+  .conditional-header {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--neon-cyan);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.8;
+  }
+
+  .mood-toggle {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+  }
+
+  .mood-btn {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid;
+    background: transparent;
+    transition: all 0.2s;
+  }
+
+  .mood-btn.friendly {
+    color: var(--neon-green);
+    border-color: rgba(57,255,20,0.4);
+  }
+
+  .mood-btn.friendly:hover, .mood-btn.friendly.active {
+    background: rgba(57,255,20,0.12);
+    box-shadow: var(--glow-green);
+  }
+
+  .mood-btn.closed {
+    color: var(--neon-pink);
+    border-color: rgba(255,0,110,0.4);
+  }
+
+  .mood-btn.closed:hover, .mood-btn.closed.active {
+    background: rgba(255,0,110,0.12);
+    box-shadow: var(--glow-pink);
+  }
+
+  .seller-fin-block { display: none; }
+  .seller-fin-block.visible { display: block; }
+
+  .end-call-note {
+    background: rgba(255,0,110,0.06);
+    border: 1px solid rgba(255,0,110,0.2);
+    border-radius: 5px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #ff6e9a;
+    font-family: 'Share Tech Mono', monospace;
+    display: none;
+  }
+
+  .end-call-note.visible { display: block; }
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-badge">// ACQUISITION PROTOCOL v2.1 //</div>
+    <h1>DEAL <span>SCOUT</span></h1>
+    <div class="header-sub">CALL SCRIPT INTERFACE · MORBY METHOD ENABLED · 32 DEALS</div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-panel">
+    <div class="progress-label">Mission Progress</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="progress-count"><span id="completedCount">0</span> / 32</div>
+  </div>
+
+  <!-- Deal Cards injected here -->
+  <div id="dealList"></div>
+
+  <!-- Summary -->
+  <div class="summary-panel">
+    <div class="summary-title">// Mission Summary //</div>
+    <div class="summary-stats">
+      <div class="stat-box">
+        <span class="stat-val" id="s-total">32</span>
+        <span class="stat-key">Total Deals</span>
+      </div>
+      <div class="stat-box green">
+        <span class="stat-val" id="s-done">0</span>
+        <span class="stat-key">Completed</span>
+      </div>
+      <div class="stat-box pink">
+        <span class="stat-val" id="s-pending">32</span>
+        <span class="stat-key">Pending</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-val" id="s-interested">0</span>
+        <span class="stat-key">Still For Sale</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-val" id="s-carry">0</span>
+        <span class="stat-key">Seller Carry Open</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+//  DATA: 32 generic deal slots (rename as needed)
+// ──────────────────────────────────────────────
+const deals = Array.from({length: 32}, (_, i) => ({
+  id: i + 1,
+  name: `Deal #${String(i+1).padStart(2,'0')} — Property`
+}));
+
+// ──────────────────────────────────────────────
+//  STATE (persisted to localStorage)
+// ──────────────────────────────────────────────
+const STATE_KEY = 'dealscout_v1';
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STATE_KEY)) || {}; } catch { return {}; }
+}
+
+function saveState(state) {
+  localStorage.setItem(STATE_KEY, JSON.stringify(state));
+}
+
+let state = loadState();
+
+function getDeal(id) {
+  return state[id] || { completed: false, stillForSale: '', sellerCarry: '', notes: '', occupancy: '', loanBal: '', motivations: '', ownerLength: '', mood: '' };
+}
+
+// ──────────────────────────────────────────────
+//  BUILD CARDS
+// ──────────────────────────────────────────────
+function buildCards() {
+  const container = document.getElementById('dealList');
+  container.innerHTML = '';
+
+  deals.forEach(deal => {
+    const d = getDeal(deal.id);
+    const card = document.createElement('div');
+    card.className = `deal-card ${d.completed ? 'completed' : ''}`;
+    card.id = `card-${deal.id}`;
+
+    const badgeClass = d.completed ? 'badge-done' : 'badge-pending';
+    const badgeText  = d.completed ? 'COMPLETE' : 'PENDING';
+
+    card.innerHTML = `
+      <div class="deal-header" onclick="toggleCard(${deal.id})">
+        <div class="deal-number">${String(deal.id).padStart(2,'0')}</div>
+        <div class="deal-name" id="name-display-${deal.id}">${deal.name}</div>
+        <div class="deal-status-badge ${badgeClass}" id="badge-${deal.id}">${badgeText}</div>
+        <div class="deal-chevron" id="chevron-${deal.id}">▼</div>
+      </div>
+
+      <div class="script-body" id="body-${deal.id}">
+
+        <!-- Deal name editor -->
+        <div style="margin-top:14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <input type="text" id="name-${deal.id}" value="${deal.name}"
+            placeholder="Enter property name / address"
+            style="flex:1; background:rgba(0,0,0,0.4); border:1px solid rgba(0,245,255,0.2); border-radius:4px; padding:8px 12px; color:#e0f7fa; font-family:'Rajdhani',sans-serif; font-size:14px; outline:none;"
+            oninput="updateName(${deal.id}, this.value)">
+          <span style="font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--text-dim); letter-spacing:2px;">ADDRESS / NAME</span>
+        </div>
+
+        <!-- STEP 1 -->
+        <div class="step step-cyan" style="margin-top:20px;">
+          <div class="step-label">Step 01</div>
+          <div class="step-title">Is the Property Still For Sale?</div>
+          <div class="script-line">"Hi, I'm calling regarding your property. Is it still available for sale?"</div>
+
+          <div class="crm-field" style="margin-top:10px; max-width:280px;">
+            <label>Response</label>
+            <select id="forSale-${deal.id}" onchange="saveDealField(${deal.id}, 'stillForSale', this.value)">
+              <option value="" ${d.stillForSale===''?'selected':''}>— Select —</option>
+              <option value="yes" ${d.stillForSale==='yes'?'selected':''}>✅ Yes, still for sale</option>
+              <option value="no"  ${d.stillForSale==='no' ?'selected':''}>❌ No longer for sale</option>
+              <option value="nm"  ${d.stillForSale==='nm' ?'selected':''}>📵 No answer / VM</option>
+            </select>
+          </div>
+          <div class="script-note">If NO → End call professionally. Log in CRM. Move on.</div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="step step-pink">
+          <div class="step-label">Step 02</div>
+          <div class="step-title">Explain Our Interest</div>
+          <div class="script-line">"Great. We may be able to offer your full listing price, but first we need some additional information about the property."</div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="step step-yellow">
+          <div class="step-label">Step 03</div>
+          <div class="step-title">Occupancy / Vacancy</div>
+          <div class="script-line">"How many vacant units do you currently have?"</div>
+          <div class="script-line">"We usually look for properties that are at least 85% occupied. If occupancy is lower, we may still consider it, but it would probably require a different loan structure and we may follow up later."</div>
+
+          <div class="crm-field" style="margin-top:10px; max-width:300px;">
+            <label>Occupancy / Vacancy Notes</label>
+            <input type="text" id="occ-${deal.id}" placeholder="e.g. 12 of 14 units occupied" value="${d.occupancy||''}"
+              oninput="saveDealField(${deal.id}, 'occupancy', this.value)">
+          </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="step step-purple">
+          <div class="step-label">Step 04</div>
+          <div class="step-title">Seller Motivation</div>
+          <div class="script-line">"Can I ask why the owner is selling?"</div>
+          <div class="script-note">Dig for the real reason. Listen carefully. Note specifics.</div>
+
+          <div class="crm-field" style="margin-top:10px;">
+            <label>Motivation Notes</label>
+            <input type="text" id="motiv-${deal.id}" placeholder="e.g. Retiring, estate sale, cash flow issues..." value="${d.motivations||''}"
+              oninput="saveDealField(${deal.id}, 'motivations', this.value)">
+          </div>
+        </div>
+
+        <!-- STEP 5 -->
+        <div class="step step-cyan">
+          <div class="step-label">Step 05</div>
+          <div class="step-title">Ownership Length</div>
+          <div class="script-line">"How long has the owner owned the property?"</div>
+
+          <div class="crm-field" style="margin-top:10px; max-width:260px;">
+            <label>Years Owned</label>
+            <input type="text" id="owned-${deal.id}" placeholder="e.g. 12 years" value="${d.ownerLength||''}"
+              oninput="saveDealField(${deal.id}, 'ownerLength', this.value)">
+          </div>
+        </div>
+
+        <!-- STEP 6 -->
+        <div class="step step-pink">
+          <div class="step-label">Step 06</div>
+          <div class="step-title">Existing Loan Balance</div>
+          <div class="script-line">"Do you know approximately what the current loan balance is on the property?"</div>
+
+          <div class="crm-field" style="margin-top:10px; max-width:280px;">
+            <label>Approx. Loan Balance</label>
+            <input type="text" id="loan-${deal.id}" placeholder="e.g. ~$1.2M" value="${d.loanBal||''}"
+              oninput="saveDealField(${deal.id}, 'loanBal', this.value)">
+          </div>
+        </div>
+
+        <!-- STEP 7 — Conditional -->
+        <div class="step step-green">
+          <div class="step-label">Step 07 — Conditional</div>
+          <div class="step-title">Seller Financing / Carry-Back</div>
+          <div class="script-note">Only ask if the conversation feels friendly and open. Gauge the mood first.</div>
+
+          <div class="mood-toggle">
+            <button class="mood-btn friendly ${d.mood==='friendly'?'active':''}" onclick="setMood(${deal.id}, 'friendly', this)">😊 FRIENDLY / OPEN</button>
+            <button class="mood-btn closed ${d.mood==='closed'?'active':''}" onclick="setMood(${deal.id}, 'closed', this)">🚫 CLOSED / GUARDED</button>
+          </div>
+
+          <!-- Friendly branch -->
+          <div class="seller-fin-block ${d.mood==='friendly'?'visible':''}" id="sf-block-${deal.id}">
+            <div class="conditional-block">
+              <div class="conditional-header">→ If Friendly: Ask Seller Carry Question</div>
+              <div class="script-line">"Right now, since the market is clearly shifting toward a buyer's market, some of our sellers are open to offering seller financing or seller carry-back structures. If we offered full listing price, do you think your client would consider some kind of seller carry?"</div>
+            </div>
+
+            <div class="if-block">
+              <div class="if-label">→ If They Ask: "What kind of seller financing?"</div>
+              <div class="script-line">"We're currently reviewing several different structures. Right now we're only trying to determine whether the seller would generally be open to some amount of seller financing if we move forward."</div>
+              <div class="script-note">DO NOT give specifics. Stay vague. That's intentional.</div>
+            </div>
+
+            <div class="if-block">
+              <div class="if-label">→ If They Say Yes</div>
+              <div class="script-line">"Perfect. Either Nikolay or Ben will follow up with you on the next conversation. Thank you very much."</div>
+            </div>
+
+            <div class="crm-field" style="margin-top:10px; max-width:300px;">
+              <label>Seller Carry Response</label>
+              <select id="carry-${deal.id}" onchange="saveDealField(${deal.id}, 'sellerCarry', this.value)">
+                <option value="" ${d.sellerCarry===''?'selected':''}>— Select —</option>
+                <option value="open"    ${d.sellerCarry==='open'?'selected':''}>✅ Open to seller carry</option>
+                <option value="closed"  ${d.sellerCarry==='closed'?'selected':''}>❌ Not interested</option>
+                <option value="maybe"   ${d.sellerCarry==='maybe'?'selected':''}>🤔 Maybe / Needs discussion</option>
+                <option value="skipped" ${d.sellerCarry==='skipped'?'selected':''}>⏭ Skipped (not asked)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Closed branch -->
+          <div class="end-call-note ${d.mood==='closed'?'visible':''}" id="ec-note-${deal.id}">
+            ⚠ Conversation is closed off. Do NOT push the seller financing question.<br>
+            End the call professionally and log your notes.
+          </div>
+        </div>
+
+        <!-- CRM Notes -->
+        <div class="crm-section">
+          <div class="crm-label">CRM Notes Entry</div>
+
+          <div class="crm-notes-wrap">
+            <label>Detailed Call Notes (for Nikolay's review)</label>
+            <textarea id="notes-${deal.id}" placeholder="Log everything: tone, objections, key details, red flags, next steps..."
+              oninput="saveDealField(${deal.id}, 'notes', this.value)">${d.notes||''}</textarea>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-save" onclick="autoSave(${deal.id})">💾 SAVE NOTES</button>
+            <button class="btn btn-complete" onclick="markComplete(${deal.id})">
+              ${d.completed ? '✓ COMPLETED' : '✅ MARK COMPLETE'}
+            </button>
+            <button class="btn btn-reset" onclick="resetDeal(${deal.id})">↺ RESET</button>
+            <span class="saved-msg" id="saved-msg-${deal.id}">✓ Saved</span>
+          </div>
+        </div>
+
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+
+  updateProgress();
+}
+
+// ──────────────────────────────────────────────
+//  INTERACTIONS
+// ──────────────────────────────────────────────
+function toggleCard(id) {
+  const card = document.getElementById(`card-${id}`);
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    card.classList.add('active');
+  } else {
+    card.classList.remove('active');
+  }
+}
+
+function updateName(id, val) {
+  const d = getDeal(id);
+  d.name = val;
+  state[id] = d;
+  saveState(state);
+  document.getElementById(`name-display-${id}`).textContent = val || `Deal #${String(id).padStart(2,'0')} — Property`;
+}
+
+function saveDealField(id, field, val) {
+  const d = getDeal(id);
+  d[field] = val;
+  state[id] = d;
+  saveState(state);
+  updateProgress();
+}
+
+function autoSave(id) {
+  const notes = document.getElementById(`notes-${id}`).value;
+  saveDealField(id, 'notes', notes);
+  const msg = document.getElementById(`saved-msg-${id}`);
+  msg.classList.add('show');
+  setTimeout(() => msg.classList.remove('show'), 2000);
+}
+
+function setMood(id, mood, btn) {
+  // Toggle buttons
+  const parent = btn.parentElement;
+  parent.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  saveDealField(id, 'mood', mood);
+
+  const sfBlock  = document.getElementById(`sf-block-${id}`);
+  const ecNote   = document.getElementById(`ec-note-${id}`);
+
+  if (mood === 'friendly') {
+    sfBlock.classList.add('visible');
+    ecNote.classList.remove('visible');
+  } else {
+    sfBlock.classList.remove('visible');
+    ecNote.classList.add('visible');
+  }
+}
+
+function markComplete(id) {
+  // Pull latest form values before marking complete
+  const notesEl   = document.getElementById(`notes-${id}`);
+  const forSaleEl = document.getElementById(`forSale-${id}`);
+  const occEl     = document.getElementById(`occ-${id}`);
+  const motivEl   = document.getElementById(`motiv-${id}`);
+  const ownedEl   = document.getElementById(`owned-${id}`);
+  const loanEl    = document.getElementById(`loan-${id}`);
+  const carryEl   = document.getElementById(`carry-${id}`);
+
+  const d = getDeal(id);
+  d.notes       = notesEl?.value     || d.notes;
+  d.stillForSale= forSaleEl?.value   || d.stillForSale;
+  d.occupancy   = occEl?.value       || d.occupancy;
+  d.motivations = motivEl?.value     || d.motivations;
+  d.ownerLength = ownedEl?.value     || d.ownerLength;
+  d.loanBal     = loanEl?.value      || d.loanBal;
+  d.sellerCarry = carryEl?.value     || d.sellerCarry;
+  d.completed   = true;
+
+  state[id] = d;
+  saveState(state);
+
+  const card = document.getElementById(`card-${id}`);
+  card.classList.add('completed');
+  card.classList.remove('active');
+  card.classList.remove('open');
+
+  document.getElementById(`badge-${id}`).className = 'deal-status-badge badge-done';
+  document.getElementById(`badge-${id}`).textContent = 'COMPLETE';
+
+  updateProgress();
+}
+
+function resetDeal(id) {
+  if (!confirm(`Reset Deal #${id}? All notes will be cleared.`)) return;
+  state[id] = { completed: false, stillForSale: '', sellerCarry: '', notes: '', occupancy: '', loanBal: '', motivations: '', ownerLength: '', mood: '' };
+  saveState(state);
+  buildCards();
+  // Re-open the card
+  setTimeout(() => toggleCard(id), 50);
+}
+
+// ──────────────────────────────────────────────
+//  PROGRESS
+// ──────────────────────────────────────────────
+function updateProgress() {
+  let done = 0, interested = 0, carry = 0;
+
+  Object.values(state).forEach(d => {
+    if (d.completed) done++;
+    if (d.stillForSale === 'yes') interested++;
+    if (d.sellerCarry === 'open') carry++;
+  });
+
+  const pct = (done / 32) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('completedCount').textContent = done;
+  document.getElementById('s-done').textContent = done;
+  document.getElementById('s-pending').textContent = 32 - done;
+  document.getElementById('s-interested').textContent = interested;
+  document.getElementById('s-carry').textContent = carry;
+}
+
+// ──────────────────────────────────────────────
+//  INIT
+// ──────────────────────────────────────────────
+buildCards();
+</script>
+</body>
+</html>
