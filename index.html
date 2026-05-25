@@ -21,6 +21,8 @@
     --glow-cyan: 0 0 10px #00f5ff, 0 0 20px #00f5ff40;
     --glow-pink: 0 0 10px #ff006e, 0 0 20px #ff006e40;
     --glow-green: 0 0 10px #39ff14, 0 0 20px #39ff1440;
+    --glow-yellow: 0 0 10px #ffbe0b, 0 0 20px #ffbe0b40;
+    --glow-orange: 0 0 10px #ff7c00, 0 0 20px #ff7c0040;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,7 +36,6 @@
     overflow-x: hidden;
   }
 
-  /* ── Animated grid background ── */
   body::before {
     content: '';
     position: fixed;
@@ -66,7 +67,6 @@
     padding: 20px 16px 60px;
   }
 
-  /* ── Header ── */
   .header {
     text-align: center;
     padding: 32px 0 24px;
@@ -105,7 +105,6 @@
     letter-spacing: 2px;
   }
 
-  /* ── Progress tracker ── */
   .progress-panel {
     background: var(--panel-bg);
     border: 1px solid var(--panel-border);
@@ -153,7 +152,6 @@
     white-space: nowrap;
   }
 
-  /* ── Deal cards ── */
   .deal-card {
     background: var(--panel-bg);
     border: 1px solid var(--panel-border);
@@ -245,7 +243,6 @@
 
   .deal-card.open .deal-chevron { transform: rotate(180deg); }
 
-  /* ── Script body ── */
   .script-body {
     display: none;
     padding: 0 18px 18px;
@@ -254,7 +251,6 @@
 
   .deal-card.open .script-body { display: block; }
 
-  /* ── Script steps ── */
   .step {
     margin-top: 18px;
     border-left: 2px solid var(--panel-border);
@@ -345,7 +341,6 @@
 
   .if-block .script-line::before { color: var(--neon-purple); }
 
-  /* ── CRM Notes area ── */
   .crm-section {
     margin-top: 20px;
     border-top: 1px dashed rgba(0,245,255,0.15);
@@ -506,6 +501,31 @@
     box-shadow: var(--glow-cyan);
   }
 
+  /* ── NEW: Copy to CRM button ── */
+  .btn-copy {
+    background: linear-gradient(135deg, rgba(255,190,11,0.15), rgba(255,190,11,0.05));
+    border: 1px solid var(--neon-yellow);
+    color: var(--neon-yellow);
+    text-shadow: var(--glow-yellow);
+  }
+
+  .btn-copy:hover {
+    background: rgba(255,190,11,0.2);
+    box-shadow: var(--glow-yellow);
+  }
+
+  /* ── NEW: Clear notes button ── */
+  .btn-clear {
+    background: rgba(255,124,0,0.08);
+    border: 1px solid rgba(255,124,0,0.4);
+    color: #ff7c00;
+  }
+
+  .btn-clear:hover {
+    background: rgba(255,124,0,0.18);
+    box-shadow: var(--glow-orange);
+  }
+
   .saved-msg {
     display: none;
     font-family: 'Share Tech Mono', monospace;
@@ -518,7 +538,104 @@
 
   .saved-msg.show { display: flex; }
 
-  /* ── Warning box ── */
+  /* ── NEW: Copy CRM preview panel ── */
+  .crm-preview-panel {
+    display: none;
+    margin-top: 16px;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,190,11,0.3);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .crm-preview-panel.visible { display: block; }
+
+  .crm-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(255,190,11,0.06);
+    border-bottom: 1px solid rgba(255,190,11,0.2);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .crm-preview-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--neon-yellow);
+    text-transform: uppercase;
+  }
+
+  .crm-preview-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .crm-preview-textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 14px;
+    color: #c8f0d0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    resize: vertical;
+    min-height: 220px;
+    outline: none;
+    letter-spacing: 0.3px;
+  }
+
+  .copy-confirm {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--neon-green);
+    display: none;
+    letter-spacing: 1px;
+  }
+
+  .copy-confirm.show { display: inline; }
+
+  .btn-close-preview {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 5px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    background: rgba(255,0,110,0.08);
+    border: 1px solid rgba(255,0,110,0.3);
+    color: var(--neon-pink);
+    transition: all 0.2s;
+  }
+
+  .btn-close-preview:hover {
+    background: rgba(255,0,110,0.18);
+    box-shadow: var(--glow-pink);
+  }
+
+  .btn-copy-clipboard {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 5px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    background: rgba(255,190,11,0.1);
+    border: 1px solid rgba(255,190,11,0.4);
+    color: var(--neon-yellow);
+    transition: all 0.2s;
+  }
+
+  .btn-copy-clipboard:hover {
+    background: rgba(255,190,11,0.2);
+    box-shadow: var(--glow-yellow);
+  }
+
   .warning-box {
     background: rgba(255,190,11,0.06);
     border: 1px solid rgba(255,190,11,0.3);
@@ -541,7 +658,6 @@
     opacity: 0.8;
   }
 
-  /* ── Summary panel ── */
   .summary-panel {
     background: var(--panel-bg);
     border: 1px solid rgba(57,255,20,0.2);
@@ -597,13 +713,11 @@
   .stat-box.green .stat-val { color: var(--neon-green); text-shadow: var(--glow-green); }
   .stat-box.pink .stat-val { color: var(--neon-pink); text-shadow: var(--glow-pink); }
 
-  /* ── Scrollbar ── */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--dark-bg); }
   ::-webkit-scrollbar-thumb { background: rgba(0,245,255,0.2); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: rgba(0,245,255,0.4); }
 
-  /* ── Scan line overlay ── */
   .scanlines {
     position: fixed;
     inset: 0;
@@ -618,13 +732,11 @@
     z-index: 999;
   }
 
-  /* ── Mobile tweaks ── */
   @media (max-width: 600px) {
     .deal-name { font-size: 13px; }
     .btn { font-size: 10px; padding: 8px 14px; }
   }
 
-  /* ── Seller financing conditional block ── */
   .conditional-block {
     background: rgba(0,245,255,0.04);
     border: 1px dashed rgba(0,245,255,0.25);
@@ -704,14 +816,12 @@
 
 <div class="wrapper">
 
-  <!-- Header -->
   <div class="header">
     <div class="header-badge">// ACQUISITION PROTOCOL v2.1 //</div>
     <h1>DEAL <span>SCOUT</span></h1>
     <div class="header-sub">CALL SCRIPT INTERFACE · MORBY METHOD ENABLED · 32 DEALS</div>
   </div>
 
-  <!-- Progress -->
   <div class="progress-panel">
     <div class="progress-label">Mission Progress</div>
     <div class="progress-bar-wrap">
@@ -720,10 +830,8 @@
     <div class="progress-count"><span id="completedCount">0</span> / 32</div>
   </div>
 
-  <!-- Deal Cards injected here -->
   <div id="dealList"></div>
 
-  <!-- Summary -->
   <div class="summary-panel">
     <div class="summary-title">// Mission Summary //</div>
     <div class="summary-stats">
@@ -753,17 +861,11 @@
 </div>
 
 <script>
-// ──────────────────────────────────────────────
-//  DATA: 32 generic deal slots (rename as needed)
-// ──────────────────────────────────────────────
 const deals = Array.from({length: 32}, (_, i) => ({
   id: i + 1,
   name: `Deal #${String(i+1).padStart(2,'0')} — Property`
 }));
 
-// ──────────────────────────────────────────────
-//  STATE (persisted to localStorage)
-// ──────────────────────────────────────────────
 const STATE_KEY = 'dealscout_v1';
 
 function loadState() {
@@ -777,12 +879,140 @@ function saveState(state) {
 let state = loadState();
 
 function getDeal(id) {
-  return state[id] || { completed: false, stillForSale: '', sellerCarry: '', notes: '', occupancy: '', loanBal: '', motivations: '', ownerLength: '', mood: '' };
+  return state[id] || {
+    completed: false,
+    stillForSale: '',
+    sellerCarry: '',
+    notes: '',
+    occupancy: '',
+    loanBal: '',
+    motivations: '',
+    ownerLength: '',
+    mood: '',
+    name: `Deal #${String(id).padStart(2,'0')} — Property`
+  };
 }
 
-// ──────────────────────────────────────────────
-//  BUILD CARDS
-// ──────────────────────────────────────────────
+// ── Label helpers ──
+function forSaleLabel(v) {
+  return { yes: 'Yes — Still For Sale', no: 'No Longer For Sale', nm: 'No Answer / Voicemail', '': 'Not Recorded' }[v] || v;
+}
+function carryLabel(v) {
+  return { open: 'Open to Seller Carry', closed: 'Not Interested', maybe: 'Maybe / Needs Discussion', skipped: 'Skipped (Not Asked)', '': 'Not Recorded' }[v] || v;
+}
+function moodLabel(v) {
+  return { friendly: 'Friendly / Open', closed: 'Closed / Guarded', '': 'Not Recorded' }[v] || v;
+}
+
+// ── Build formatted CRM text for a deal ──
+function buildCRMText(id) {
+  const d = getDeal(id);
+  const nameEl    = document.getElementById(`name-${id}`);
+  const notesEl   = document.getElementById(`notes-${id}`);
+  const forSaleEl = document.getElementById(`forSale-${id}`);
+  const occEl     = document.getElementById(`occ-${id}`);
+  const motivEl   = document.getElementById(`motiv-${id}`);
+  const ownedEl   = document.getElementById(`owned-${id}`);
+  const loanEl    = document.getElementById(`loan-${id}`);
+  const carryEl   = document.getElementById(`carry-${id}`);
+
+  const name      = nameEl?.value     || d.name;
+  const notes     = notesEl?.value    || d.notes     || '—';
+  const forSale   = forSaleEl?.value  || d.stillForSale;
+  const occ       = occEl?.value      || d.occupancy  || '—';
+  const motiv     = motivEl?.value    || d.motivations|| '—';
+  const owned     = ownedEl?.value    || d.ownerLength|| '—';
+  const loan      = loanEl?.value     || d.loanBal    || '—';
+  const carry     = carryEl?.value    || d.sellerCarry;
+  const mood      = d.mood;
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
+  const timeStr = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+
+  return [
+    `╔══════════════════════════════════════════════╗`,
+    `  DEAL SCOUT — CLOSE CRM CALL LOG`,
+    `  ${dateStr}  |  ${timeStr}`,
+    `╚══════════════════════════════════════════════╝`,
+    ``,
+    `PROPERTY : ${name}`,
+    ``,
+    `─── CALL RESULTS ───────────────────────────────`,
+    `Still For Sale   : ${forSaleLabel(forSale)}`,
+    `Occupancy        : ${occ}`,
+    `Owner Motivation : ${motiv}`,
+    `Years Owned      : ${owned}`,
+    `Loan Balance     : ${loan}`,
+    `Seller Mood      : ${moodLabel(mood)}`,
+    `Seller Carry     : ${carryLabel(carry)}`,
+    ``,
+    `─── CALL NOTES ──────────────────────────────────`,
+    notes,
+    ``,
+    `─────────────────────────────────────────────────`,
+    `Logged via Deal Scout · Morby Method Protocol`,
+  ].join('\n');
+}
+
+// ── Show / hide CRM preview panel ──
+function showCRMPreview(id) {
+  const panel = document.getElementById(`crm-preview-${id}`);
+  const ta    = document.getElementById(`crm-preview-ta-${id}`);
+  ta.value = buildCRMText(id);
+  panel.classList.add('visible');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function hideCRMPreview(id) {
+  document.getElementById(`crm-preview-${id}`).classList.remove('visible');
+}
+
+// ── Copy to clipboard ──
+function copyToClipboard(id) {
+  const ta      = document.getElementById(`crm-preview-ta-${id}`);
+  const confirm = document.getElementById(`copy-confirm-${id}`);
+
+  // Refresh content before copy
+  ta.value = buildCRMText(id);
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(ta.value).then(() => {
+      showCopyConfirm(confirm);
+    }).catch(() => {
+      fallbackCopy(ta, confirm);
+    });
+  } else {
+    fallbackCopy(ta, confirm);
+  }
+}
+
+function fallbackCopy(ta, confirm) {
+  ta.select();
+  ta.setSelectionRange(0, 99999);
+  try {
+    document.execCommand('copy');
+    showCopyConfirm(confirm);
+  } catch(e) {
+    alert('Copy failed — please select all text in the box and copy manually (Ctrl+A, Ctrl+C).');
+  }
+}
+
+function showCopyConfirm(el) {
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ── Clear notes only ──
+function clearNotes(id) {
+  if (!confirm(`Clear call notes for Deal #${id}? This only clears the notes field.`)) return;
+  const ta = document.getElementById(`notes-${id}`);
+  if (ta) ta.value = '';
+  saveDealField(id, 'notes', '');
+  // Also hide preview if open
+  hideCRMPreview(id);
+}
+
 function buildCards() {
   const container = document.getElementById('dealList');
   container.innerHTML = '';
@@ -799,7 +1029,7 @@ function buildCards() {
     card.innerHTML = `
       <div class="deal-header" onclick="toggleCard(${deal.id})">
         <div class="deal-number">${String(deal.id).padStart(2,'0')}</div>
-        <div class="deal-name" id="name-display-${deal.id}">${deal.name}</div>
+        <div class="deal-name" id="name-display-${deal.id}">${d.name || deal.name}</div>
         <div class="deal-status-badge ${badgeClass}" id="badge-${deal.id}">${badgeText}</div>
         <div class="deal-chevron" id="chevron-${deal.id}">▼</div>
       </div>
@@ -808,7 +1038,7 @@ function buildCards() {
 
         <!-- Deal name editor -->
         <div style="margin-top:14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-          <input type="text" id="name-${deal.id}" value="${deal.name}"
+          <input type="text" id="name-${deal.id}" value="${d.name || deal.name}"
             placeholder="Enter property name / address"
             style="flex:1; background:rgba(0,0,0,0.4); border:1px solid rgba(0,245,255,0.2); border-radius:4px; padding:8px 12px; color:#e0f7fa; font-family:'Rajdhani',sans-serif; font-size:14px; outline:none;"
             oninput="updateName(${deal.id}, this.value)">
@@ -820,7 +1050,6 @@ function buildCards() {
           <div class="step-label">Step 01</div>
           <div class="step-title">Is the Property Still For Sale?</div>
           <div class="script-line">"Hi, I'm calling regarding your property. Is it still available for sale?"</div>
-
           <div class="crm-field" style="margin-top:10px; max-width:280px;">
             <label>Response</label>
             <select id="forSale-${deal.id}" onchange="saveDealField(${deal.id}, 'stillForSale', this.value)">
@@ -846,7 +1075,6 @@ function buildCards() {
           <div class="step-title">Occupancy / Vacancy</div>
           <div class="script-line">"How many vacant units do you currently have?"</div>
           <div class="script-line">"We usually look for properties that are at least 85% occupied. If occupancy is lower, we may still consider it, but it would probably require a different loan structure and we may follow up later."</div>
-
           <div class="crm-field" style="margin-top:10px; max-width:300px;">
             <label>Occupancy / Vacancy Notes</label>
             <input type="text" id="occ-${deal.id}" placeholder="e.g. 12 of 14 units occupied" value="${d.occupancy||''}"
@@ -860,7 +1088,6 @@ function buildCards() {
           <div class="step-title">Seller Motivation</div>
           <div class="script-line">"Can I ask why the owner is selling?"</div>
           <div class="script-note">Dig for the real reason. Listen carefully. Note specifics.</div>
-
           <div class="crm-field" style="margin-top:10px;">
             <label>Motivation Notes</label>
             <input type="text" id="motiv-${deal.id}" placeholder="e.g. Retiring, estate sale, cash flow issues..." value="${d.motivations||''}"
@@ -873,7 +1100,6 @@ function buildCards() {
           <div class="step-label">Step 05</div>
           <div class="step-title">Ownership Length</div>
           <div class="script-line">"How long has the owner owned the property?"</div>
-
           <div class="crm-field" style="margin-top:10px; max-width:260px;">
             <label>Years Owned</label>
             <input type="text" id="owned-${deal.id}" placeholder="e.g. 12 years" value="${d.ownerLength||''}"
@@ -886,7 +1112,6 @@ function buildCards() {
           <div class="step-label">Step 06</div>
           <div class="step-title">Existing Loan Balance</div>
           <div class="script-line">"Do you know approximately what the current loan balance is on the property?"</div>
-
           <div class="crm-field" style="margin-top:10px; max-width:280px;">
             <label>Approx. Loan Balance</label>
             <input type="text" id="loan-${deal.id}" placeholder="e.g. ~$1.2M" value="${d.loanBal||''}"
@@ -894,7 +1119,7 @@ function buildCards() {
           </div>
         </div>
 
-        <!-- STEP 7 — Conditional -->
+        <!-- STEP 7 -->
         <div class="step step-green">
           <div class="step-label">Step 07 — Conditional</div>
           <div class="step-title">Seller Financing / Carry-Back</div>
@@ -905,24 +1130,20 @@ function buildCards() {
             <button class="mood-btn closed ${d.mood==='closed'?'active':''}" onclick="setMood(${deal.id}, 'closed', this)">🚫 CLOSED / GUARDED</button>
           </div>
 
-          <!-- Friendly branch -->
           <div class="seller-fin-block ${d.mood==='friendly'?'visible':''}" id="sf-block-${deal.id}">
             <div class="conditional-block">
               <div class="conditional-header">→ If Friendly: Ask Seller Carry Question</div>
               <div class="script-line">"Right now, since the market is clearly shifting toward a buyer's market, some of our sellers are open to offering seller financing or seller carry-back structures. If we offered full listing price, do you think your client would consider some kind of seller carry?"</div>
             </div>
-
             <div class="if-block">
               <div class="if-label">→ If They Ask: "What kind of seller financing?"</div>
               <div class="script-line">"We're currently reviewing several different structures. Right now we're only trying to determine whether the seller would generally be open to some amount of seller financing if we move forward."</div>
               <div class="script-note">DO NOT give specifics. Stay vague. That's intentional.</div>
             </div>
-
             <div class="if-block">
               <div class="if-label">→ If They Say Yes</div>
               <div class="script-line">"Perfect. Either Nikolay or Ben will follow up with you on the next conversation. Thank you very much."</div>
             </div>
-
             <div class="crm-field" style="margin-top:10px; max-width:300px;">
               <label>Seller Carry Response</label>
               <select id="carry-${deal.id}" onchange="saveDealField(${deal.id}, 'sellerCarry', this.value)">
@@ -935,7 +1156,6 @@ function buildCards() {
             </div>
           </div>
 
-          <!-- Closed branch -->
           <div class="end-call-note ${d.mood==='closed'?'visible':''}" id="ec-note-${deal.id}">
             ⚠ Conversation is closed off. Do NOT push the seller financing question.<br>
             End the call professionally and log your notes.
@@ -953,15 +1173,30 @@ function buildCards() {
           </div>
 
           <div class="btn-row">
-            <button class="btn btn-save" onclick="autoSave(${deal.id})">💾 SAVE NOTES</button>
+            <button class="btn btn-save"     onclick="autoSave(${deal.id})">💾 SAVE NOTES</button>
+            <button class="btn btn-copy"     onclick="showCRMPreview(${deal.id})">📋 COPY FOR CRM</button>
+            <button class="btn btn-clear"    onclick="clearNotes(${deal.id})">🗑 CLEAR NOTES</button>
             <button class="btn btn-complete" onclick="markComplete(${deal.id})">
               ${d.completed ? '✓ COMPLETED' : '✅ MARK COMPLETE'}
             </button>
-            <button class="btn btn-reset" onclick="resetDeal(${deal.id})">↺ RESET</button>
+            <button class="btn btn-reset"    onclick="resetDeal(${deal.id})">↺ RESET</button>
             <span class="saved-msg" id="saved-msg-${deal.id}">✓ Saved</span>
           </div>
-        </div>
 
+          <!-- ── CRM Preview / Copy Panel ── -->
+          <div class="crm-preview-panel" id="crm-preview-${deal.id}">
+            <div class="crm-preview-header">
+              <div class="crm-preview-title">📋 Close CRM — Ready to Paste</div>
+              <div class="crm-preview-actions">
+                <span class="copy-confirm" id="copy-confirm-${deal.id}">✓ Copied!</span>
+                <button class="btn-copy-clipboard" onclick="copyToClipboard(${deal.id})">⧉ COPY TO CLIPBOARD</button>
+                <button class="btn-close-preview"  onclick="hideCRMPreview(${deal.id})">✕ CLOSE</button>
+              </div>
+            </div>
+            <textarea class="crm-preview-textarea" id="crm-preview-ta-${deal.id}" spellcheck="false" readonly></textarea>
+          </div>
+
+        </div>
       </div>
     `;
 
@@ -971,17 +1206,10 @@ function buildCards() {
   updateProgress();
 }
 
-// ──────────────────────────────────────────────
-//  INTERACTIONS
-// ──────────────────────────────────────────────
 function toggleCard(id) {
   const card = document.getElementById(`card-${id}`);
   card.classList.toggle('open');
-  if (card.classList.contains('open')) {
-    card.classList.add('active');
-  } else {
-    card.classList.remove('active');
-  }
+  card.classList.toggle('active', card.classList.contains('open'));
 }
 
 function updateName(id, val) {
@@ -1009,27 +1237,14 @@ function autoSave(id) {
 }
 
 function setMood(id, mood, btn) {
-  // Toggle buttons
-  const parent = btn.parentElement;
-  parent.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+  btn.parentElement.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-
   saveDealField(id, 'mood', mood);
-
-  const sfBlock  = document.getElementById(`sf-block-${id}`);
-  const ecNote   = document.getElementById(`ec-note-${id}`);
-
-  if (mood === 'friendly') {
-    sfBlock.classList.add('visible');
-    ecNote.classList.remove('visible');
-  } else {
-    sfBlock.classList.remove('visible');
-    ecNote.classList.add('visible');
-  }
+  document.getElementById(`sf-block-${id}`).classList.toggle('visible', mood === 'friendly');
+  document.getElementById(`ec-note-${id}`).classList.toggle('visible', mood === 'closed');
 }
 
 function markComplete(id) {
-  // Pull latest form values before marking complete
   const notesEl   = document.getElementById(`notes-${id}`);
   const forSaleEl = document.getElementById(`forSale-${id}`);
   const occEl     = document.getElementById(`occ-${id}`);
@@ -1037,15 +1252,17 @@ function markComplete(id) {
   const ownedEl   = document.getElementById(`owned-${id}`);
   const loanEl    = document.getElementById(`loan-${id}`);
   const carryEl   = document.getElementById(`carry-${id}`);
+  const nameEl    = document.getElementById(`name-${id}`);
 
   const d = getDeal(id);
-  d.notes       = notesEl?.value     || d.notes;
-  d.stillForSale= forSaleEl?.value   || d.stillForSale;
-  d.occupancy   = occEl?.value       || d.occupancy;
-  d.motivations = motivEl?.value     || d.motivations;
-  d.ownerLength = ownedEl?.value     || d.ownerLength;
-  d.loanBal     = loanEl?.value      || d.loanBal;
-  d.sellerCarry = carryEl?.value     || d.sellerCarry;
+  d.name        = nameEl?.value     || d.name;
+  d.notes       = notesEl?.value    || d.notes;
+  d.stillForSale= forSaleEl?.value  || d.stillForSale;
+  d.occupancy   = occEl?.value      || d.occupancy;
+  d.motivations = motivEl?.value    || d.motivations;
+  d.ownerLength = ownedEl?.value    || d.ownerLength;
+  d.loanBal     = loanEl?.value     || d.loanBal;
+  d.sellerCarry = carryEl?.value    || d.sellerCarry;
   d.completed   = true;
 
   state[id] = d;
@@ -1053,8 +1270,7 @@ function markComplete(id) {
 
   const card = document.getElementById(`card-${id}`);
   card.classList.add('completed');
-  card.classList.remove('active');
-  card.classList.remove('open');
+  card.classList.remove('active', 'open');
 
   document.getElementById(`badge-${id}`).className = 'deal-status-badge badge-done';
   document.getElementById(`badge-${id}`).textContent = 'COMPLETE';
@@ -1063,26 +1279,24 @@ function markComplete(id) {
 }
 
 function resetDeal(id) {
-  if (!confirm(`Reset Deal #${id}? All notes will be cleared.`)) return;
-  state[id] = { completed: false, stillForSale: '', sellerCarry: '', notes: '', occupancy: '', loanBal: '', motivations: '', ownerLength: '', mood: '' };
+  if (!confirm(`Reset Deal #${id}? All data will be cleared.`)) return;
+  state[id] = {
+    completed: false, stillForSale: '', sellerCarry: '', notes: '',
+    occupancy: '', loanBal: '', motivations: '', ownerLength: '', mood: '',
+    name: `Deal #${String(id).padStart(2,'0')} — Property`
+  };
   saveState(state);
   buildCards();
-  // Re-open the card
   setTimeout(() => toggleCard(id), 50);
 }
 
-// ──────────────────────────────────────────────
-//  PROGRESS
-// ──────────────────────────────────────────────
 function updateProgress() {
   let done = 0, interested = 0, carry = 0;
-
   Object.values(state).forEach(d => {
     if (d.completed) done++;
     if (d.stillForSale === 'yes') interested++;
     if (d.sellerCarry === 'open') carry++;
   });
-
   const pct = (done / 32) * 100;
   document.getElementById('progressFill').style.width = pct + '%';
   document.getElementById('completedCount').textContent = done;
@@ -1092,9 +1306,6 @@ function updateProgress() {
   document.getElementById('s-carry').textContent = carry;
 }
 
-// ──────────────────────────────────────────────
-//  INIT
-// ──────────────────────────────────────────────
 buildCards();
 </script>
 </body>
